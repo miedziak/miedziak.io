@@ -1,12 +1,12 @@
 name: Hi there ;)
-description: Blogging react, js architecture, UI and UX
+description: Blogging about react, js and architecture, UI and UX
 meta_description: "Your New Jekyll Site, Blogging about stuffs"
 
 markdown: kramdown
 highlighter: rouge
 logo: false
 paginate: 15
-baseurl: /
+baseurl: http://miedziak.io
 domain_name: 'http://miedziak.io'
 google_analytics: 'UA-XXXXXXXX-X'
 gems: [jekyll-paginate]
