@@ -4,12 +4,17 @@ meta_description: "Your New Jekyll Site, Blogging about stuffs"
 
 markdown: kramdown
 highlighter: rouge
+kramdown:
+  input: GFM
+  syntax_highlighter_opts:
+    default_lang: javascript
+    css_class   : 'syntax'
 logo: false
 paginate: 15
-baseurl: http://miedziak.io
+baseurl:
 domain_name: 'http://miedziak.io'
 google_analytics: 'UA-XXXXXXXX-X'
-gems: [jekyll-paginate]
+plugins: [jekyll-paginate]
 
 
 # Details for the RSS feed generator
