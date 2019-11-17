@@ -5,7 +5,9 @@ date:   2019-11-05 10:18:00
 categories: Axios js API REST
 ---
 
-Thanks to [axios](https://github.com/axios/axios) we gain lots of power when it comes to executing and consuming API request, but  it don't gives us  any "ready to use" pattern how to use and structure them in correct way. So I like to share with you my approach about that.
+---
+### Introduction
+Thanks to [axios](https://github.com/axios/axios) we gain lots of power when it comes to executing and consuming REST API, but  it don't gives us  any "ready to use" pattern how to use and structure them in correct way.
 
 I wan't to share with you my approach about how do I organize and implement services while using axios library.
 
@@ -19,14 +21,88 @@ The goal will be to create API service files structure which would fulfil the cr
 * adding interceptors for all services (i.e. global errors), particular one (endpoint specific errors), or even for particular endpoints
 * support for migrating to newest API version (i.e https://api.exmaple.com/v2/* )
 
+---
+### Implementation
 
-{% highlight javascript %}
-const foo = () => {
-    console.log('aaa');
+For this articule purpose I will use fake online REST API
+
+#### I. axiosProvider
+
+In first step we create simple function that will return our axios instance, so that we could use it independently on each level of our structure.
+
+{% highlight javascript linenos %}
+import axios from 'axios';
+
+const defaultOptions = {};
+
+function axiosProvider(baseUrl, options) {
+  console.log('creating axios instance')
+  return axios.create({
+    baseURL: baseUrl,
+    ...defaultOptions,
+    ...options
+  });
 }
+
+export default axiosProvider;
 {% endhighlight %}
 
-Check out the [Jekyll docs][jekyll] for more info on how to get the most out of Jekyll. File all bugs/feature requests at [Jekyll's GitHub repo][jekyll-gh].
+Actually, we could ommit this step, but I think this is nice place to set our defaults options for axios.
+
+#### II. CoreApi class
+
+Next step is to create our basic class that we will be using across all of our services. 
+
+{% highlight javascript linenos %}
+import axiosProvider from './axiosProvider';
+
+class CoreApi {
+  constructor(baseUrl, slug = '') {
+    this.baseUrl = baseUrl;
+    this.slug = slug;
+    this.api = axiosProvider(`${this.baseUrl}${this.slug}`);
+    this.setInterceptors({
+      beforeRequest: this._beforeRequest,
+      requestError: this._requestError,
+      afterResponse: this._afterResponse,
+      responseError: this._responseError,
+    });
+  }
+  ...
+{% endhighlight %}
+
+In a constructor, we pass two parameters:
+- `baseUrl` - later on, we would pass here service main url like i.e - 'https://jsonplaceholder.typicode.com'
+- `slug` - will be like cluster under which we will group our requests -> ie. '/posts'. So for `/posts` would could have many requests like `GET /posts` `POST /posts` but also `GET /posts/search?userId=1`
+
+We are using both this parameters, to create axios instance with default [baseUrl](https://github.com/axios/axios#axioscreateconfig), so that later on we could use it just like `this.api.get('')` or `this.api.get('/search?userId=' + id)`
+
+In line number 8, we are also setting interceptors that are defined underneath our constructor. It's implementation details is not crucial for now, se we skipp it.
+
+But what important to mention, is that this interceptors will be global. What that mean is any services that we would create later on, would be using/invoking this interceptors in request cycle.
+
+#### III. apiProvider
+
+We are almost there. There is one more class that we should create to keep it flexible and extensible. This class would help us to use different API in our project, but still sharing some functionality between them ( ie. handling errors, share tokens, etc.)
+
+It's basic implementation could looks something like this:
+
+{% highlight javascript linenos %}
+import CoreApi from '../CoreApi';
+import config from '../../config';
+
+class placeholderApiProvider extends CoreApi {
+  constructor(endpoint) {
+    super(config.placeholderApiUrl, endpoint);
+  }
+}
+
+export default placeholderApiProvider;
+{% endhighlight %}
+
+This class will be used later on to create each of class to manage bunch of endpoints related to particular resources ( ie. `/posts` ).
+
+So here we just invoking  `CoreApi` constructor with appropriate apiUrl from config -> `config.placeholderApiUrl`. In our case this value is `https://jsonplaceholder.typicode.com`
 
 [jekyll-gh]: https://github.com/mojombo/jekyll
 [jekyll]:    http://jekyllrb.com
