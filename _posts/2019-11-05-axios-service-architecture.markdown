@@ -16,7 +16,7 @@ In this post, I'm not going to cover basics about using axios services, and I as
 The goal will be to create API service files structure which would fulfil the criteria:
 
 * extendable, maintainable, readable.
-* separate endpoints path group for separate files (/posts /comments)
+* separate endpoints path group for separate files/service ( ie. /posts /comments /users)
 * possibility to create and manage many root apis with different host url (many separate REST service), but still sharing functionality of each other (like interceptors). 
 * adding interceptors for all services (i.e. global errors), particular one (endpoint specific errors), or even for particular endpoints
 * support for migrating to newest API version (i.e https://api.exmaple.com/v2/* )
@@ -24,7 +24,7 @@ The goal will be to create API service files structure which would fulfil the cr
 ---
 ### Implementation
 
-For this articule purpose I will use fake online REST API
+For this articule purpose I will use fake online REST API - [https://jsonplaceholder.typicode.com](https://jsonplaceholder.typicode.com)
 
 #### I. axiosProvider
 
@@ -47,7 +47,7 @@ function axiosProvider(baseUrl, options) {
 export default axiosProvider;
 {% endhighlight %}
 
-Actually, we could ommit this step, but I think this is nice place to set our defaults options for axios.
+`defaultOptions` variable is empty for now, but keep in mind it's nice place to set our defaults options for axios.
 
 #### II. CoreApi class
 
@@ -67,8 +67,18 @@ class CoreApi {
       afterResponse: this._afterResponse,
       responseError: this._responseError,
     });
-  }
-  ...
+  };
+    
+  setInterceptors = ({
+    beforeRequest,
+    requestError,
+    afterResponse,
+    responseError,
+  }) => {
+    this.api.interceptors.request.use(beforeRequest, requestError);
+    this.api.interceptors.response.use(afterResponse, responseError);
+  };
+   ...
 {% endhighlight %}
 
 In a constructor, we pass two parameters:
@@ -100,9 +110,42 @@ class placeholderApiProvider extends CoreApi {
 export default placeholderApiProvider;
 {% endhighlight %}
 
-This class will be used later on to create each of class to manage bunch of endpoints related to particular resources ( ie. `/posts` ).
+In our application we could have many independent API, each on different url, that we have to working on ( ie. authorization, weather, currency, cms ) . The goal here, is to create class that would be used later on to create each of our services related to particular API.
 
 So here we just invoking  `CoreApi` constructor with appropriate apiUrl from config -> `config.placeholderApiUrl`. In our case this value is `https://jsonplaceholder.typicode.com`
+
+Keep in mind, that we could set interceptors for this particular API, just by invoking `this.setInterceptors({ ... })`. It would invoke independently from our global interceptors from `CoreApi` file. 
+ 
+#### IV. Finally... Service !!
+
+Ok, now we are ready to go with service itself. So we create class based on `placeholderApiProvider`.  It will be responsible to manage bunch of endpoints related to particular resources ( ie. `/posts` ).
+
+{% highlight javascript linenos %}
+import PlaceholderApiProvider from '../serviceProviders/placeholderApiProvider';
+
+class PostsService extends PlaceholderApiProvider {
+  async getAll() {
+    return this.api.get();
+  }
+
+  async getById(id) {
+    return this.api.get(`/${id}`);
+  }
+
+  async getCommentsForPost(id) {
+    return this.api.get(`/${id}/comments`);
+  }
+
+}
+
+const postsService = new PostsService('/posts');
+
+export default postsService;
+export { PostsService };
+{% endhighlight %}
+
+So this is our goal service. We implement methods like `getAll` `getById` `getCommentsForPost` that we could use later on in our Sagas or Components.
+
 
 [jekyll-gh]: https://github.com/mojombo/jekyll
 [jekyll]:    http://jekyllrb.com
