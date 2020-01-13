@@ -9,7 +9,7 @@ categories: Axios js API REST
 ### Introduction
 Thanks to [axios](https://github.com/axios/axios) we gain lots of power when it comes to executing and consuming REST API, but  it don't gives us  any "ready to use" pattern how to use and structure them in correct way.
 
-I wan't to share with you my approach about how do I organize and implement services while using axios library.
+I want to share with you my approach about how do I organize and implement services while using axios library.
 
 In this post, I'm not going to cover basics about using axios services, and I assume you have got basic knowledge about axios and ES6 at least. 
 
@@ -87,13 +87,13 @@ In a constructor, we pass two parameters:
 
 We are using both this parameters, to create axios instance with default [baseUrl](https://github.com/axios/axios#axioscreateconfig), so that later on we could use it just like `this.api.get('')` or `this.api.get('/search?userId=' + id)`
 
-In line number 8, we are also setting interceptors that are defined underneath our constructor. It's implementation details is not crucial for now, se we skipp it.
+In line number 8, we are also setting interceptors that are defined underneath our constructor. It's implementation details is not crucial for now, se we skipp this.
 
 But what important to mention, is that this interceptors will be global. What that mean is any services that we would create later on, would be using/invoking this interceptors in request cycle.
 
 #### III. apiProvider
 
-We are almost there. There is one more class that we should create to keep it flexible and extensible. This class would help us to use different API in our project, but still sharing some functionality between them ( ie. handling errors, share tokens, etc.)
+We are almost there. There is one more class that we should create to keep it flexible and extensible. This class would help us to use many APIs in our project, but still sharing some functionality between them ( ie. handling errors, share tokens, etc.)
 
 It's basic implementation could looks something like this:
 
@@ -114,7 +114,7 @@ In our application we could have many independent API, each on different url, th
 
 So here we just invoking  `CoreApi` constructor with appropriate apiUrl from config -> `config.placeholderApiUrl`. In our case this value is `https://jsonplaceholder.typicode.com`
 
-Keep in mind, that we could set interceptors for this particular API, just by invoking `this.setInterceptors({ ... })`. It would invoke independently from our global interceptors from `CoreApi` file. 
+Keep in mind, that we could set interceptors for this particular API, just by invoking `this.setInterceptors({ ... })` in the constructor. It would invoke independently from our global interceptors from `CoreApi` file. 
  
 #### IV. Finally... Service !!
 
@@ -145,6 +145,11 @@ export { PostsService };
 {% endhighlight %}
 
 So this is our goal service. We implement methods like `getAll` `getById` `getCommentsForPost` that we could use later on in our Sagas or Components.
+
+## Usage
+
+
+
 
 
 [jekyll-gh]: https://github.com/mojombo/jekyll
