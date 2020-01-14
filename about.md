@@ -1,6 +1,0 @@
----
-layout: page
-title: About me 
----
-
-Hello, I'm a 34 years old frontend developer with over 11 years old experience in developing and delivering web and mobile apps for clients. I'm curious about frontend app architecture, mostly based on react. Passionate about good UX and clean code. 
