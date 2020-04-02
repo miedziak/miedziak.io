@@ -37,7 +37,25 @@ module.exports = {
   plugins: [
     {
       resolve: `@lekoarts/gatsby-theme-minimal-blog`,
-      options: {},
+      options: {
+        showLineNumbers: true,
+        navigation: [
+          {
+            title: `Blog`,
+            slug: `/blog`,
+          },
+          {
+            title: `About`,
+            slug: `/about`,
+          },
+        ],
+        externalLinks: [
+          {
+            name: `Github`,
+            url: `https://github.com/miedziak`,
+          },
+        ],
+      },
     },
     {
       resolve: `gatsby-plugin-google-analytics`,

@@ -7,10 +7,12 @@ import ColorModeToggle from "@lekoarts/gatsby-theme-minimal-blog/src/components/
 import useNavigation from "@lekoarts/gatsby-theme-minimal-blog/src/hooks/use-navigation"
 import Navigation from "@lekoarts/gatsby-theme-minimal-blog/src/components/navigation"
 import replaceSlashes from "@lekoarts/gatsby-theme-minimal-blog/src/utils/replaceSlashes"
+import useMinimalBlogConfig from "@lekoarts/gatsby-theme-minimal-blog/src/hooks/use-minimal-blog-config"
 
 const Header = () => {
-    const { siteTitle, externalLinks, basePath } = useSiteMetadata()
-    const nav = useNavigation()
+    const { siteTitle} = useSiteMetadata()
+
+    const { navigation: nav, externalLinks, basePath } = useMinimalBlogConfig()
 
     const [colorMode, setColorMode] = useColorMode()
     const isDark = colorMode === `dark`
@@ -18,7 +20,6 @@ const Header = () => {
         e.preventDefault()
         setColorMode(isDark ? `light` : `dark`)
     }
-
     return (
         <header sx={{ mb: [5, 6] }}>
             <Flex sx={{ alignItems: `center`, justifyContent: `space-between`, variant: `dividers.bottom` }}>
