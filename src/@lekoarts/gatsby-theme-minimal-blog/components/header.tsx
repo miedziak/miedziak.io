@@ -10,19 +10,18 @@ import replaceSlashes from "@lekoarts/gatsby-theme-minimal-blog/src/utils/replac
 import useMinimalBlogConfig from "@lekoarts/gatsby-theme-minimal-blog/src/hooks/use-minimal-blog-config"
 
 const Header = () => {
-    const { siteTitle} = useSiteMetadata()
-
+    const { siteTitle } = useSiteMetadata()
     const { navigation: nav, externalLinks, basePath } = useMinimalBlogConfig()
-
     const [colorMode, setColorMode] = useColorMode()
     const isDark = colorMode === `dark`
     const toggleColorMode = (e: any) => {
         e.preventDefault()
         setColorMode(isDark ? `light` : `dark`)
     }
+
     return (
         <header sx={{ mb: [5, 6] }}>
-            <Flex sx={{ alignItems: `center`, justifyContent: `space-between`, variant: `dividers.bottom` }}>
+            <Flex sx={{ alignItems: `center`, justifyContent: `space-between` }}>
                 <Link
                     to={replaceSlashes(`/${basePath}`)}
                     aria-label={`${siteTitle} - Back to home`}
@@ -30,14 +29,32 @@ const Header = () => {
                 >
                     <h1 sx={{ my: 0, fontWeight: `medium`, fontSize: [3, 4] }}>{siteTitle}</h1>
                 </Link>
-                <div sx={{
-                    ml:'auto',
-                    mr: 2
-                }} >
-                <Navigation nav={nav} />
-                </div>
                 <ColorModeToggle isDark={isDark} toggle={toggleColorMode} />
             </Flex>
+            <div
+                sx={{
+                    boxSizing: `border-box`,
+                    display: `flex`,
+                    variant: `dividers.bottom`,
+                    alignItems: `center`,
+                    justifyContent: `space-between`,
+                    mt: 3,
+                    color: `secondary`,
+                    a: { color: `secondary`, ":hover": { color: `heading` } },
+                    flexFlow: `wrap`,
+                }}
+            >
+                <Navigation nav={nav} />
+                {externalLinks && externalLinks.length > 0 && (
+                    <div sx={{ "a:not(:first-of-type)": { ml: 3 }, fontSize: [1, `18px`] }}>
+                        {externalLinks.map((link) => (
+                            <Styled.a key={link.url} href={link.url}>
+                                {link.name}
+                            </Styled.a>
+                        ))}
+                    </div>
+                )}
+            </div>
         </header>
     )
 }
