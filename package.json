@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "minimal-blog",
+  "name": "blog-miedziak-io",
   "description": "Typography driven, feature-rich blogging theme with minimal aesthetics. Includes tags/categories support and extensive features for code blocks such as live preview, line numbers, and line highlighting.",
   "version": "0.1.7",
   "author": "LekoArts <hello@lekoarts.de>",
